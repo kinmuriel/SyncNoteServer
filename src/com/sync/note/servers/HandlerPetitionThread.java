@@ -7,7 +7,13 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import com.sync.note.messages.SuperMessage;
-
+/**
+ * Class responsible for handles different petitions and answer 
+ * depending the different kind of message which is received.
+ * 
+ * @author kinmuriel
+ *
+ */
 public class HandlerPetitionThread implements Runnable{
 
 	private Socket socket;

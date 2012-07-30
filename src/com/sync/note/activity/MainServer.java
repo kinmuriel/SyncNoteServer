@@ -18,10 +18,10 @@ public class MainServer {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-		SyncNoteServer sns = new SyncNoteServerImpl();
+		SyncNoteServer sns = new SyncNoteServerImpl(); // The server is created
 		
 		try {
-			sns.runServer();
+			sns.runServer();		// The server is running.
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();		// We prints the IOException.

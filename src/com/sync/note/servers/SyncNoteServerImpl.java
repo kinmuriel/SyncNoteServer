@@ -9,7 +9,7 @@ public class SyncNoteServerImpl implements SyncNoteServer{
 	private static int PORT = 8083;
 	
 	/**
-	 * This method creates a thread that handles the petition
+	 * This method creates a thread that handles the different petitions
 	 * 
 	 * 
 	 * @param socket
