@@ -14,12 +14,6 @@ import com.sync.note.messages.SuperMessage;
 
 public class SmokeTest {
 	
-	@BeforeClass
-	public static void createServer(){
-		Thread thread = new CreateServerThread();
-		thread.start();
-	}
-	
 	@Test
 	public void SendRequestTest() {
 		try {

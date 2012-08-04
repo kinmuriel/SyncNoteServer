@@ -58,7 +58,7 @@ public class DBDemo
 	    	c.close();
 	    	fail("It should have failed cause there is no user named bad");
 	    }catch(SQLException sql){
-	    	//Nothing to do.
+	    	sql.printStackTrace();
 	    }
   	}
   
@@ -75,7 +75,7 @@ public class DBDemo
 		  c.close();
 		  fail("It should have failed cause wrong password");
 	  }catch(SQLException s){
-		  //Nothing to do.
+		  s.printStackTrace();  
 	  }
   }
 }
