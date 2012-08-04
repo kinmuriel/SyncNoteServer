@@ -7,6 +7,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.sync.note.messages.Messages;
@@ -31,6 +32,7 @@ public class SmokeTest {
 	}
 	
 	@Test
+	@Ignore //This test should carry out a more specific functionality.
 	public void SendRequestAnswerTest(){
 		try {
 			Thread.sleep(1000);
