@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
+import com.sync.note.messages.LoginMessage;
 import com.sync.note.messages.RegisterMessage;
 import com.sync.note.messages.SuperMessage;
 import com.sync.note.messages.Messages;
@@ -51,6 +52,23 @@ public class HandlerPetitionThread implements Runnable{
 		}
 	}
 	
+	private boolean existUser(String userName, String password, Connection c){
+		boolean returnValue = false;
+		try{
+			System.out.println("Creating statement...");
+			Statement stmnt = c.createStatement();
+			String sql = "SELECT * FROM users WHERE username = '" + userName + "' and " +
+					"password = '" + password + "'";
+			ResultSet rs = stmnt.executeQuery(sql);
+		    return rs.next();
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+		
+		return returnValue;
+		
+	}
+	
 	private boolean insertUser(Connection c, String userName, String password){
 		boolean returnValue = false;
 		
@@ -69,16 +87,7 @@ public class HandlerPetitionThread implements Runnable{
 		return returnValue;
 	}
 	
-	private void sendBasicAnswer(ObjectOutputStream oos, int message) throws IOException{
-		SuperMessage sm = new SuperMessage(message);
-		oos.writeObject(sm);
-	}
-	
-	private void processLoginRequestMessage(SuperMessage sm, ObjectOutputStream oos){
-		
-	}
-	
-	private void processRegisterRequestMessage(RegisterMessage sm, ObjectOutputStream oos) throws ClassNotFoundException, SQLException, IOException{
+	private Connection createConnection() throws SQLException, ClassNotFoundException{
 		Class.forName(dbClassName);
 		Properties p = new Properties();
 	    p.put("user",USER_DATABASE);
@@ -88,6 +97,32 @@ public class HandlerPetitionThread implements Runnable{
 	    System.out.println("Connecting to a selected database...");
 	    Connection c = DriverManager.getConnection(CONNECTION,p);
 	    System.out.println("Connected database successfully...");
+	    
+	    return c;
+	}
+	
+	private void sendBasicAnswer(ObjectOutputStream oos, int message) throws IOException{
+		SuperMessage sm = new SuperMessage(message);
+		oos.writeObject(sm);
+	}
+	
+	private void processLoginRequestMessage(LoginMessage sm, ObjectOutputStream oos) throws SQLException, ClassNotFoundException, IOException{
+		Connection c = createConnection();
+		
+		String username = sm.getUserName();
+		String password = sm.getPassword();
+		
+		if(existUser(username,password,c)){
+			System.out.println("User with password found. Sending back good message");
+			sendBasicAnswer(oos, Messages.GOOD_LOGIN_ANSWER);
+		}else{
+			System.out.println("The login or user is not correct. Sending back bad message");
+			sendBasicAnswer(oos, Messages.BAD_LOGIN_ANSWER);
+		}
+	}
+	
+	private void processRegisterRequestMessage(RegisterMessage sm, ObjectOutputStream oos) throws ClassNotFoundException, SQLException, IOException{
+		Connection c = createConnection();
 	    
 	    String username = sm.getUserName();
 	    String password = sm.getPassword();
@@ -106,13 +141,14 @@ public class HandlerPetitionThread implements Runnable{
 	    }
 	}
 	
-	private void processMessage(SuperMessage sm,ObjectOutputStream oos){
+	private void processMessage(SuperMessage sm,ObjectOutputStream oos) throws IOException{
 		
 		try{
 			System.out.println("Message type received :" + sm.getMessageType());
 			switch(sm.getMessageType()){
 				case Messages.LOGIN_REQUEST:
-					processLoginRequestMessage(sm,oos);
+					LoginMessage lm = (LoginMessage)sm;
+					processLoginRequestMessage(lm,oos);
 					break;
 				case Messages.REGISTER_REQUEST:
 					RegisterMessage rm = (RegisterMessage)sm;
@@ -127,11 +163,17 @@ public class HandlerPetitionThread implements Runnable{
 			}
 		}catch(ClassNotFoundException c){
 			c.printStackTrace();
+			System.out.println("Internal error. Proceding to inform client part");
+			sendBasicAnswer(oos, Messages.INTERNAL_ERROR);
 		}catch(SQLException s){
 			s.printStackTrace();
+			System.out.println("Internal error. Proceding to inform client part");
+			sendBasicAnswer(oos, Messages.INTERNAL_ERROR);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.out.println("Internal error. Proceding to inform client part");
+			sendBasicAnswer(oos, Messages.INTERNAL_ERROR);
 		}
 	}
 	

@@ -17,6 +17,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.sync.note.messages.LoginMessage;
 import com.sync.note.messages.Messages;
 import com.sync.note.messages.RegisterMessage;
 import com.sync.note.messages.SuperMessage;
@@ -35,6 +36,21 @@ public class BasicServerTest {
 		thread.start();
 	}
 	
+	@Test
+	public void badLoginTest() throws InterruptedException, IOException, ClassNotFoundException{
+		Thread.sleep(1000);
+		Socket socket = new Socket("localhost",8083);
+		ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+		ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+		LoginMessage lm = new LoginMessage("GoodRegisterTest", "pass1");
+		System.out.println("LoginMessage sending");
+		oos.writeObject(lm);
+		System.out.println("LoginMessage sended. Waiting for answer");
+		SuperMessage sm = (SuperMessage)ois.readObject();
+		if(sm.getMessageType() != Messages.BAD_LOGIN_ANSWER){
+			fail("It's supossed that there is no correct user with this user and password");
+		}
+	}
 	
 	@Test
 	public void goodRegisterTest() throws UnknownHostException, IOException, InterruptedException, ClassNotFoundException {
@@ -53,6 +69,22 @@ public class BasicServerTest {
 	}
 	
 	@Test
+	public void badLoginTest2() throws InterruptedException, IOException, ClassNotFoundException{
+		Thread.sleep(1000);
+		Socket socket = new Socket("localhost",8083);
+		ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+		ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+		LoginMessage lm = new LoginMessage("GoodRegisterTest", "pass2");
+		System.out.println("LoginMessage sending");
+		oos.writeObject(lm);
+		System.out.println("LoginMessage sended. Waiting for answer");
+		SuperMessage sm = (SuperMessage)ois.readObject();
+		if(sm.getMessageType() != Messages.BAD_LOGIN_ANSWER){
+			fail("It's supossed that this is not the correct password for this user");
+		}
+	}
+	
+	@Test
 	public void badRegisterTest() throws UnknownHostException, IOException, InterruptedException, ClassNotFoundException {
 		Thread.sleep(1000);
 		Socket socket = new Socket("localhost", 8083);
@@ -66,6 +98,22 @@ public class BasicServerTest {
 		if(sm.getMessageType() != Messages.BAD_REGISTER_ANSWER){
 			fail("There should have been some mistake with register petition message, cause " +
 					"the user should exist with the previous test.");		
+		}
+	}
+	
+	@Test
+	public void goodLoginTest() throws InterruptedException, IOException, ClassNotFoundException{
+		Thread.sleep(1000);
+		Socket socket = new Socket("localhost",8083);
+		ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+		ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+		LoginMessage lm = new LoginMessage("GoodRegisterTest", "pass1");
+		System.out.println("LoginMessage sending");
+		oos.writeObject(lm);
+		System.out.println("LoginMessage sended. Waiting for answer");
+		SuperMessage sm = (SuperMessage)ois.readObject();
+		if(sm.getMessageType() != Messages.GOOD_LOGIN_ANSWER){
+			fail("There have been some kind of mistake with this login petition");
 		}
 	}
 	
