@@ -37,6 +37,13 @@ public class HandlerPetitionThread implements Runnable{
 		socket = s;
 	}
 	
+	/**
+	 * This method checks if there is an existing username inside the c connection.
+	 * 
+	 * @param userName
+	 * @param c
+	 * @return if the user exists.
+	 */
 	private boolean existUser(String userName, Connection c){
 		try {
 			System.out.println("Creating statement...");
@@ -52,6 +59,14 @@ public class HandlerPetitionThread implements Runnable{
 		}
 	}
 	
+	/**
+	 * This method checks if there is an existing username with a password specific inside the c conection.
+	 * 
+	 * @param userName
+	 * @param password
+	 * @param c
+	 * @return true if the user exists.
+	 */
 	private boolean existUser(String userName, String password, Connection c){
 		boolean returnValue = false;
 		try{
@@ -69,6 +84,14 @@ public class HandlerPetitionThread implements Runnable{
 		
 	}
 	
+	/**
+	 * This method inserts an specific username with an specific password inside the c connection.
+	 * 
+	 * @param c
+	 * @param userName
+	 * @param password
+	 * @return true if the user has been inserted correctly.
+	 */
 	private boolean insertUser(Connection c, String userName, String password){
 		boolean returnValue = false;
 		
@@ -101,11 +124,27 @@ public class HandlerPetitionThread implements Runnable{
 	    return c;
 	}
 	
+	/**
+	 * This method creates a SuperMessage with message and write its throught oos.
+	 * 
+	 * @param oos
+	 * @param message
+	 * @throws IOException
+	 */
 	private void sendBasicAnswer(ObjectOutputStream oos, int message) throws IOException{
 		SuperMessage sm = new SuperMessage(message);
 		oos.writeObject(sm);
 	}
 	
+	/**
+	 * This method carries out the processing against a Login petition and returns through the socket a good or bad answer.
+	 * 
+	 * @param sm
+	 * @param oos
+	 * @throws SQLException
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 */
 	private void processLoginRequestMessage(LoginMessage sm, ObjectOutputStream oos) throws SQLException, ClassNotFoundException, IOException{
 		Connection c = createConnection();
 		
@@ -121,6 +160,15 @@ public class HandlerPetitionThread implements Runnable{
 		}
 	}
 	
+	/**
+	 * This method carries out the processing against a Register petition and returns through the socket a good or bad answer.
+	 * 
+	 * @param sm
+	 * @param oos
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 * @throws IOException
+	 */
 	private void processRegisterRequestMessage(RegisterMessage sm, ObjectOutputStream oos) throws ClassNotFoundException, SQLException, IOException{
 		Connection c = createConnection();
 	    
@@ -141,6 +189,13 @@ public class HandlerPetitionThread implements Runnable{
 	    }
 	}
 	
+	/**
+	 * This method extract the message type from SuperMessage object carries out different processing as a function of message type.
+	 * 
+	 * @param sm
+	 * @param oos
+	 * @throws IOException
+	 */
 	private void processMessage(SuperMessage sm,ObjectOutputStream oos) throws IOException{
 		
 		try{
